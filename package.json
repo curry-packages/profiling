@@ -1,0 +1,18 @@
+{
+    "name": "profiling",
+    "version": "1.0.0",
+    "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
+    "synopsis": "Library to access profile data of the back-end Prolog system of PAKCS",
+    "category": [ "Testing" ],
+    "dependencies": { },
+    "exportedModules": [ "PlProfileData" ],
+    "compilerCompatibility": {
+        "pakcs": ">= 2.0.0"
+    },
+    "license": "BSD-3-Clause",
+    "licenseFile": "LICENSE",
+    "source": {
+        "git": "https://git.ps.informatik.uni-kiel.de/curry-packages/profiling.git",
+        "tag": "$version"
+    }
+}
