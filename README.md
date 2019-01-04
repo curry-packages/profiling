@@ -1,7 +1,7 @@
-profiling: Support for Profiling PAKCS
-======================================
+profiling: Support for simple profiling
+=======================================
 
-This package contains a library to access profile data of the back-end
-Prolog system of PAKCS.
+This package contains a simple profiling library
+containing operations to access run-time data.
 
 --------------------------------------------------------------------------
