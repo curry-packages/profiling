@@ -4,6 +4,7 @@
 --- @author Michael Hanus
 --- @version January 2019
 ------------------------------------------------------------------------------
+{-# LANGUAGE CPP #-}
 
 module Debug.Profile
   ( ProcessInfo(..), getProcessInfos, showMemInfo, printMemInfo
@@ -40,21 +41,37 @@ data ProcessInfo = RunTime | ElapsedTime | Memory | Code
 ---     :set rts -T
 ---
 getProcessInfos :: IO [(ProcessInfo,Int)]
+#ifdef __CURRY2GO__
+getProcessInfos = return []
+#else
 getProcessInfos external
+#endif
 
 --- Turns off the garbage collector of the run-time system (if possible).
 --- This could be useful to get more precise data of memory usage.
 garbageCollectorOff :: IO ()
+#ifdef __CURRY2GO__
+garbageCollectorOff = return ()
+#else
 garbageCollectorOff external
+#endif
 
 --- Turns on the garbage collector of the run-time system (if possible).
 garbageCollectorOn :: IO ()
+#ifdef __CURRY2GO__
+garbageCollectorOn = return ()
+#else
 garbageCollectorOn external
+#endif
 
 --- Invoke the garbage collector (if possible).
 --- This could be useful before run-time critical operations.
 garbageCollect :: IO ()
+#ifdef __CURRY2GO__
+garbageCollect = return ()
+#else
 garbageCollect external
+#endif
 
 --- Get a human readable version of the memory situation from the
 --- process infos.
