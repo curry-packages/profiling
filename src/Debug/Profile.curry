@@ -2,18 +2,18 @@
 --- Simple profiling library with operations to access run-time data.
 ---
 --- @author Michael Hanus
---- @version January 2019
+--- @version July 2024
 ------------------------------------------------------------------------------
 
 module Debug.Profile
   ( ProcessInfo(..), getProcessInfos, showMemInfo, printMemInfo
   , garbageCollectorOff, garbageCollectorOn, garbageCollect
   , profileTime, profileTimeNF, profileSpace, profileSpaceNF
-  , getTimings, getTimingsNF
+  , getTimings, getElapsedTimeNF, getTimingsNF
   )
  where
 
-import Data.List (intersperse)
+import Data.List (intercalate)
 
 --- The data type for representing information about the state
 --- of a Curry process.
@@ -59,7 +59,7 @@ garbageCollect external
 --- Get a human readable version of the memory situation from the
 --- process infos.
 showMemInfo :: [(ProcessInfo,Int)] -> String
-showMemInfo infos = concat $ intersperse ", " $
+showMemInfo infos = intercalate ", " $
   formatItem Memory "Memory: "  ++
   formatItem Code   "Code: "    ++
   formatItem Stack  "Stack: "   ++
@@ -99,17 +99,27 @@ getTimings action = do
           infoDiff pi1 pi2 GarbageCollections)
 
 --- Evaluates the argument to normal form
---- and print the time needed for this evaluation.
-profileTimeNF :: a -> IO ()
-profileTimeNF exp = profileTime (seq (id $!! exp) (return ()))
-
---- Evaluates the argument to normal form
 --- and returns the run time, elapsed time, and number of garbage collections
 --- needed for this evaluation.
 getTimingsNF :: a -> IO (Int,Int,Int)
 getTimingsNF exp = do
   (_,rt,et,gc) <- getTimings (seq (id $!! exp) (return ()))
   return (rt,et,gc)
+
+--- Execute an I/O action, evaluate result to normal form, and return the
+--- result together with the elapsed time (in milliseconds).
+getElapsedTimeNF :: IO a -> IO (a,Int)
+getElapsedTimeNF action = do
+  garbageCollect
+  pi1   <- getProcessInfos
+  value <- action >>= (return $!!)
+  pi2   <- getProcessInfos
+  return (value, infoDiff pi1 pi2 ElapsedTime)
+
+--- Evaluates the argument to normal form
+--- and print the time needed for this evaluation.
+profileTimeNF :: a -> IO ()
+profileTimeNF exp = profileTime (seq (id $!! exp) (return ()))
 
 --- Print the time and space needed to execute a given IO action.
 --- During the executation, the garbage collector is turned off to get the
